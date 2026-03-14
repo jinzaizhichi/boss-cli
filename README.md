@@ -1,5 +1,6 @@
 # boss-cli
 
+[![PyPI version](https://img.shields.io/pypi/v/boss-cli.svg)](https://pypi.org/project/boss-cli/)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://pypi.org/project/boss-cli/)
 
 A CLI for BOSS 直聘 — search jobs, view recommendations, manage applications, and chat with recruiters via reverse-engineered API 🤝
@@ -12,6 +13,8 @@ A CLI for BOSS 直聘 — search jobs, view recommendations, manage applications
 - [bilibili-cli](https://github.com/jackwener/bilibili-cli) — Bilibili CLI for videos, users, and search
 - [twitter-cli](https://github.com/jackwener/twitter-cli) — Twitter/X CLI for timelines, bookmarks, and posting
 - [discord-cli](https://github.com/jackwener/discord-cli) — Discord CLI for local-first sync, search, and export
+- [tg-cli](https://github.com/jackwener/tg-cli) — Telegram CLI for local-first sync, search, and export
+- [rdt-cli](https://github.com/jackwener/rdt-cli) — Reddit CLI for feed, search, posts, and interactions
 
 ## Features
 
@@ -28,7 +31,23 @@ A CLI for BOSS 直聘 — search jobs, view recommendations, manage applications
 ## Installation
 
 ```bash
-# From source
+# Recommended: uv tool (fast, isolated)
+uv tool install boss-cli
+
+# Or: pipx
+pipx install boss-cli
+```
+
+Upgrade to the latest version:
+
+```bash
+uv tool upgrade boss-cli
+# Or: pipx upgrade boss-cli
+```
+
+From source:
+
+```bash
 git clone git@github.com:jackwener/boss-cli.git
 cd boss-cli
 uv sync
@@ -49,6 +68,13 @@ boss search "Java" --salary 20-30K     # Filter by salary
 boss search "前端" --exp 3-5年          # Filter by experience
 boss search "AI" --degree 硕士         # Filter by degree
 boss search "后端" --city 深圳 -p 2    # Pagination
+
+# ─── Detail & Export ──────────────────────────────
+boss show 3                            # View job #3 from last search
+boss detail <securityId>               # View full job details
+boss detail <securityId> --json        # JSON output
+boss export "Python" -n 50 -o jobs.csv # Export search results to CSV
+boss export "golang" --format json -o jobs.json  # Export as JSON
 
 # ─── Recommendations ──────────────────────────────
 boss recommend                         # View recommended jobs
@@ -109,6 +135,12 @@ boss-cli ships with a [`SKILL.md`](./SKILL.md) that teaches AI agents how to use
 ```bash
 mkdir -p .agents/skills
 git clone git@github.com:jackwener/boss-cli.git .agents/skills/boss-cli
+```
+
+### OpenClaw / ClawHub
+
+```bash
+clawhub install boss-cli
 ```
 
 ## Project Structure

@@ -21,9 +21,12 @@ tags:
 
 ```bash
 # Install (requires Python 3.10+)
-git clone git@github.com:jackwener/boss-cli.git
-cd boss-cli
-uv sync
+uv tool install boss-cli
+# Or: pipx install boss-cli
+
+# Upgrade to latest (recommended)
+uv tool upgrade boss-cli
+# Or: pipx upgrade boss-cli
 ```
 
 ## Authentication
