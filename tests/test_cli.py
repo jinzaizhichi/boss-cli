@@ -104,7 +104,12 @@ class TestAuthCommands:
         with patch("boss_cli.auth.get_credential", return_value=None):
             result = runner.invoke(cli, ["status", "--yaml"])
             assert result.exit_code == 0
-            data = json.loads(result.output)
+            try:
+                import yaml
+
+                data = yaml.safe_load(result.output)
+            except ImportError:
+                data = json.loads(result.output)
             assert data["authenticated"] is False
             assert data["credential_present"] is False
 
