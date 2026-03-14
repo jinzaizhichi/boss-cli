@@ -22,7 +22,6 @@ from .constants import (
     JOB_CARD_URL,
     JOB_DETAIL_URL,
     JOB_HISTORY_URL,
-    JOB_RECOMMEND_URL,
     JOB_SEARCH_URL,
     RESUME_BASEINFO_URL,
     RESUME_EXPECT_URL,
@@ -161,8 +160,10 @@ class BossClient:
             if params and params.get("query"):
                 query = f"?query={params['query']}"
             headers["Referer"] = f"{WEB_GEEK_JOB_URL}{query}"
-        elif url == JOB_RECOMMEND_URL:
+        elif url == GEEK_GET_JOB_URL and params and params.get("tag") == 5:
             headers["Referer"] = WEB_GEEK_RECOMMEND_URL
+        elif url == GEEK_GET_JOB_URL:
+            headers["Referer"] = WEB_GEEK_CHAT_URL
         elif url in (JOB_CARD_URL, JOB_DETAIL_URL):
             headers["Referer"] = WEB_GEEK_JOB_URL
         elif url == JOB_HISTORY_URL:
@@ -313,8 +314,31 @@ class BossClient:
         return self._get(JOB_SEARCH_URL, params=params, action="搜索职位")
 
     def get_recommend_jobs(self, page: int = 1) -> dict[str, Any]:
-        """Get personalized job recommendations."""
-        return self._get(JOB_RECOMMEND_URL, params={"page": page}, action="推荐职位")
+        """Get personalized job recommendations.
+
+        The live web page currently loads recommendation cards from
+        ``/wapi/zprelation/interaction/geekGetJob`` with tag=5 rather
+        than the older ``/wapi/zpgeek/pc/recommend/job/list.json`` path.
+        Normalize that payload back into the CLI's historical shape.
+        """
+        data = self._get(
+            GEEK_GET_JOB_URL,
+            params={"page": page, "tag": 5, "isActive": "true"},
+            action="推荐职位",
+        )
+        if "jobList" in data:
+            return data
+
+        card_list = data.get("cardList", [])
+        return {
+            "jobList": card_list,
+            "hasMore": data.get("hasMore", False),
+            "totalCount": data.get("totalCount", len(card_list)),
+            "page": data.get("page", page),
+            "startIndex": data.get("startIndex", 0),
+            "type": data.get("type", 2),
+            "lid": data.get("lid", ""),
+        }
 
     def get_job_card(self, security_id: str, lid: str) -> dict[str, Any]:
         """Get job card info (hover preview)."""

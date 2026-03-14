@@ -139,6 +139,8 @@ boss-cli supports multiple authentication methods:
 
 `boss login` auto-extracts browser cookies first, falls back to QR login. Use `--cookie-source chrome` to specify a browser, or `--qrcode` to skip browser detection. The command now verifies the saved credential against a real authenticated API before reporting success.
 
+`boss recommend` follows the live web app's current recommendation data source and request context, which improves compatibility when the legacy recommendation endpoint is rejected.
+
 ### Cookie TTL & Auto-Refresh
 
 Saved cookies auto-refresh from browser after **7 days**. If browser refresh fails, falls back to stale cookies and logs a warning.

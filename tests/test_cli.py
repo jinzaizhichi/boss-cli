@@ -445,7 +445,7 @@ class TestClient:
 
         cred = Credential(cookies={"__zp_stoken__": "s", "wt2": "1", "wbg": "2", "zp_at": "3"})
         with BossClient(cred) as client:
-            headers = client._headers_for_request("/wapi/zpgeek/pc/recommend/job/list.json")
+            headers = client._headers_for_request("/wapi/zprelation/interaction/geekGetJob", params={"tag": 5})
             assert headers["Referer"].endswith("/web/geek/recommend")
 
     def test_burst_penalty_kicks_in_after_multiple_requests(self, monkeypatch):
@@ -459,6 +459,27 @@ class TestClient:
             monkeypatch.setattr("boss_cli.client.time.time", lambda: now)
             delay = client._burst_penalty_delay()
             assert delay >= 1.2
+
+    def test_get_recommend_jobs_normalizes_card_list(self, monkeypatch):
+        from boss_cli.auth import Credential
+        from boss_cli.client import BossClient
+
+        cred = Credential(cookies={"__zp_stoken__": "s", "wt2": "1", "wbg": "2", "zp_at": "3"})
+        with BossClient(cred) as client:
+            monkeypatch.setattr(
+                client,
+                "_get",
+                lambda url, params=None, action="": {
+                    "cardList": [{"jobName": "Java", "securityId": "abc"}],
+                    "hasMore": True,
+                    "totalCount": 1,
+                    "page": 1,
+                    "startIndex": 0,
+                },
+            )
+            data = client.get_recommend_jobs(page=1)
+            assert data["jobList"][0]["jobName"] == "Java"
+            assert data["hasMore"] is True
 
 
 # ── Index Cache ─────────────────────────────────────────────────────
